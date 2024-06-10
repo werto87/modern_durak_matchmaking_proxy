@@ -19,5 +19,7 @@ class Project(ConanFile):
         self.options["boost"].header_only = True
 
     def requirements(self):
-        self.requires("catch2/2.13.7")
-        self.requires("boost/1.85.0")
+        self.requires("catch2/[<3]")
+        self.requires("corrade/2020.06")
+        self.requires("matchmaking_proxy/0.0.5")
+        self.requires("modern_durak_game_option/0.0.0")
