@@ -22,7 +22,6 @@ find_package(Corrade)
 find_package(modern_durak_game_option)
 find_package(matchmaking_proxy)
 target_link_libraries(run_server modern_durak_game_option::modern_durak_game_option Corrade::Corrade matchmaking_proxy::matchmaking_proxy)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_custom_target(copy_compile_commands_json ALL
                   DEPENDS ${CMAKE_SOURCE_DIR}/compile_commands.json)
