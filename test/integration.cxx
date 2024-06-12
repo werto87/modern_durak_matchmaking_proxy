@@ -74,13 +74,7 @@ connectWebsocketSSL (auto handleMsgFromGame, io_context &ioContext, boost::asio:
     }
 }
 
-TEST_CASE ("test")
-{
-  [[maybe_unused]] auto i = int{};
-  [[maybe_unused]] auto b = int{};
-}
-
-TEST_CASE ("test2")
+TEST_CASE ("INTEGRATION TEST user,matchmaking, game", "[.][integration]")
 {
   if (sodium_init () < 0)
     {
