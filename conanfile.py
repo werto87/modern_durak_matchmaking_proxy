@@ -20,8 +20,8 @@ class Project(ConanFile):
         self.options["matchmaking_proxy"].with_log_co_spawn_print_exceptions = False
         self.options["matchmaking_proxy"].with_log_my_websocket = True
         self.options["matchmaking_proxy"].with_my_websocket_read_end = False
-        self.options["matchmaking_proxy"].with_log_for_state_machine = False
-        self.options["matchmaking_proxy"].with_log_object_to_string_with_object_name = False
+        self.options["matchmaking_proxy"].with_log_for_state_machine = True
+        self.options["matchmaking_proxy"].with_log_object_to_string_with_object_name = True
 
     def requirements(self):
         self.requires("catch2/[<3]")
