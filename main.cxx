@@ -1,5 +1,6 @@
 #include <Corrade/Utility/Arguments.h>
 #include <boost/asio/experimental/awaitable_operators.hpp>
+#include <boost/asio/signal_set.hpp>
 #include <boost/json/src.hpp>
 #include <matchmaking_proxy/database/database.hxx>
 #include <matchmaking_proxy/logic/matchmakingGame.hxx>

@@ -6,11 +6,13 @@
 #include <boost/asio/detached.hpp>
 #include <boost/asio/experimental/awaitable_operators.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/beast/websocket.hpp>
 #include <cstddef>
 #include <exception>
 #include <map>
 #include <matchmaking_proxy/server/myWebsocket.hxx>
 #include <matchmaking_proxy/util.hxx>
+#include <thread>
 #include <variant>
 using namespace matchmaking_proxy;
 typedef boost::beast::websocket::stream<boost::asio::use_awaitable_t<>::as_default_on_t<boost::beast::tcp_stream> > Websocket;

@@ -5,8 +5,10 @@
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/detached.hpp>
 #include <boost/asio/experimental/awaitable_operators.hpp>
+#include <boost/asio/signal_set.hpp>
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/ssl.hpp>
 #include <boost/certify/extensions.hpp>
 #include <boost/certify/https_verification.hpp>
 #include <boost/json/src.hpp> // Only in one translation unit
