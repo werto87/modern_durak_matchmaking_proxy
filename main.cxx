@@ -1,15 +1,16 @@
 #include <Corrade/Utility/Arguments.h>
 #include <boost/asio/experimental/awaitable_operators.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <boost/asio/thread_pool.hpp>
 #include <boost/json/src.hpp>
 #include <matchmaking_proxy/database/database.hxx>
 #include <matchmaking_proxy/logic/matchmakingGame.hxx>
 #include <matchmaking_proxy/server/matchmakingOption.hxx>
-#include <matchmaking_proxy/server/myWebsocket.hxx>
 #include <matchmaking_proxy/server/server.hxx>
 #include <matchmaking_proxy/util.hxx>
 #include <modern_durak_game_option/src.hxx>
 #include <modern_durak_game_option/userDefinedGameOption.hxx>
+#include <my_web_socket/coSpawnPrintException.hxx>
 #include <sodium/core.h>
 auto const DEFAULT_PORT_USER = std::string{ "55555" };
 auto const DEFAULT_PORT_MATCHMAKING_TO_GAME = std::string{ "4242" };
@@ -69,7 +70,7 @@ main (int argc, char **argv)
       using namespace boost::asio::experimental::awaitable_operators;
       auto userEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_USER };
       auto gameMatchmakingEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_GAME_TO_MATCHMAKING };
-      co_spawn (ioContext, server.userMatchmaking (userEndpoint, PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_File, std::chrono::seconds{SECRETS_POLLING_SLEEP_TIMER_SECONDS}, MatchmakingOption{}, ADDRESS_GAME,PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING,SSL_CONTEXT_VERIFY_NONE) && server.gameMatchmaking (gameMatchmakingEndpoint), printException);
+      co_spawn (ioContext, server.userMatchmaking (userEndpoint, PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_File, std::chrono::seconds{SECRETS_POLLING_SLEEP_TIMER_SECONDS}, MatchmakingOption{}, ADDRESS_GAME,PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING,SSL_CONTEXT_VERIFY_NONE) && server.gameMatchmaking (gameMatchmakingEndpoint), my_web_socket::printException);
       ioContext.run ();
     }
   catch (std::exception &e)

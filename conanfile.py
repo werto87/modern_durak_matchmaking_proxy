@@ -26,5 +26,5 @@ class Project(ConanFile):
     def requirements(self):
         self.requires("catch2/[<3]")
         self.requires("corrade/2020.06")
-        self.requires("matchmaking_proxy/1.0.1")
-        self.requires("modern_durak_game_option/0.0.0")
+        self.requires("matchmaking_proxy/1.0.3")
+        self.requires("modern_durak_game_option/latest")
