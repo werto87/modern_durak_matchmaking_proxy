@@ -16,7 +16,6 @@ class Project(ConanFile):
         # We can control the options of our dependencies based on current options
         self.options["catch2"].with_main = True
         self.options["catch2"].with_benchmark = True
-        self.options["boost"].header_only = True
         self.options["matchmaking_proxy"].with_log_co_spawn_print_exceptions = False
         self.options["matchmaking_proxy"].with_log_my_websocket = True
         self.options["matchmaking_proxy"].with_my_websocket_read_end = False
@@ -26,5 +25,5 @@ class Project(ConanFile):
     def requirements(self):
         self.requires("catch2/[<3]")
         self.requires("corrade/2020.06")
-        self.requires("matchmaking_proxy/1.0.3")
+        self.requires("matchmaking_proxy/1.0.5")
         self.requires("modern_durak_game_option/latest")
