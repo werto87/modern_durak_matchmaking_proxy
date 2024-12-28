@@ -48,7 +48,7 @@ main (int argc, char **argv)
       std::terminate ();
       /* panic! the library couldn't be initialized, it is not safe to use */
     }
-  database::createEmptyDatabase ();
+  database::createDatabaseIfNotExist ();
   database::createTables ();
   try
     {
