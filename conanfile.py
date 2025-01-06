@@ -16,11 +16,11 @@ class Project(ConanFile):
         # We can control the options of our dependencies based on current options
         self.options["catch2"].with_main = True
         self.options["catch2"].with_benchmark = True
-        self.options["matchmaking_proxy"].with_log_for_state_machine = True
+        self.options["matchmaking_proxy"].with_log_for_state_machine = False
         self.options["matchmaking_proxy"].with_log_object_to_string_with_object_name = False
-        self.options["my_web_socket"].log_co_spawn_print_exception = True
-        self.options["my_web_socket"].log_write = True
-        self.options["my_web_socket"].log_read = True
+        # self.options["my_web_socket"].log_co_spawn_print_exception = True
+        # self.options["my_web_socket"].log_write = True
+        # self.options["my_web_socket"].log_read = True
 
 
 
