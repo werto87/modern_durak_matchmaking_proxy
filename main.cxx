@@ -1,3 +1,5 @@
+#include <vector>
+// TODO #include <vector> has to be included before #include <Corrade/Utility/Arguments.h> or #include <Corrade/Utility/Arguments.h> is not building. This problem is in libc++ version 19.1.7-1
 #include <Corrade/Utility/Arguments.h>
 #include <boost/asio/experimental/awaitable_operators.hpp>
 #include <boost/asio/signal_set.hpp>
@@ -12,6 +14,7 @@
 #include <modern_durak_game_option/userDefinedGameOption.hxx>
 #include <my_web_socket/coSpawnPrintException.hxx>
 #include <sodium/core.h>
+
 auto const DEFAULT_PORT_USER = std::string{ "55555" };
 auto const DEFAULT_PORT_MATCHMAKING_TO_GAME = std::string{ "4242" };
 auto const DEFAULT_PORT_USER_TO_GAME_VIA_MATCHMAKING = std::string{ "3232" };
