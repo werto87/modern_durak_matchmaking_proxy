@@ -33,3 +33,4 @@ class Project(ConanFile):
         self.requires("matchmaking_proxy/1.2.1")
         self.requires("modern_durak_game_option/latest")
         self.requires("confu_algorithm/1.2.1")
+        self.requires("confu_json/1.1.1@modern-durak",force=True)
