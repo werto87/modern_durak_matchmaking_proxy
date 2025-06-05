@@ -1,4 +1,4 @@
-FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2024_06_13_07_30_54 as BUILD
+FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2025_06_05_13_41_14 as BUILD
 
 COPY cmake /home/build_user/modern_durak_matchmaking_proxy/cmake
 COPY CMakeLists.txt /home/build_user/modern_durak_matchmaking_proxy
@@ -10,7 +10,7 @@ COPY ProjectOptions.cmake /home/build_user/modern_durak_matchmaking_proxy
 WORKDIR /home/build_user/modern_durak_matchmaking_proxy  
 
 RUN sudo chown -R build_user /home/build_user &&\
-    conan remote add modern_durak http://195.128.100.39:8081/artifactory/api/conan/conan &&\
+    conan remote add modern_durak http://modern-durak.com:8081/artifactory/api/conan/conan &&\
     conan profile detect &&\
     conan install . --output-folder=build --settings compiler.cppstd=gnu23 --build=missing
 
