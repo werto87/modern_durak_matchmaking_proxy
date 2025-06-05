@@ -10,8 +10,8 @@ COPY ProjectOptions.cmake /home/build_user/modern_durak_matchmaking_proxy
 WORKDIR /home/build_user/modern_durak_matchmaking_proxy  
 
 RUN sudo chown -R build_user /home/build_user &&\
-    conan remote add modern_durak http://modern-durak.com:8081/artifactory/api/conan/conan-local &&\
-    conan profile detect && conan remote login modern_durak read -p 'B2"bi%y@SQhqP~X' &&\
+    conan remote add modern_durak http://195.128.100.39:8081/artifactory/api/conan/conan &&\
+    conan profile detect &&\
     conan install . --output-folder=build --settings compiler.cppstd=gnu23 --build=missing
 
 WORKDIR /home/build_user/modern_durak_matchmaking_proxy/build
