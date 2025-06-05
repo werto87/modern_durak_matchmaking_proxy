@@ -27,7 +27,7 @@ class Project(ConanFile):
 
 
     def requirements(self):
-        self.requires("boost/1.86.0")
+        self.requires("boost/1.86.0",force=True)
         self.requires("catch2/[<3]")
         self.requires("corrade/2025.06")
         self.requires("matchmaking_proxy/1.2.1")
