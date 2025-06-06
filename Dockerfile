@@ -1,4 +1,4 @@
-FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2025_06_06_09_52_17
+FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2025_06_06_09_52_17 AS BUILD
 
 COPY cmake /home/build_user/modern_durak_matchmaking_proxy/cmake
 COPY CMakeLists.txt /home/build_user/modern_durak_matchmaking_proxy
