@@ -1,4 +1,4 @@
-FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2025_06_05_13_41_14 as BUILD
+FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base_devel_conan:2025_06_06_09_52_17
 
 COPY cmake /home/build_user/modern_durak_matchmaking_proxy/cmake
 COPY CMakeLists.txt /home/build_user/modern_durak_matchmaking_proxy
@@ -36,7 +36,7 @@ WORKDIR /home/build_user/modern_durak_matchmaking_proxy/build
 
 RUN test/_test  -d yes --order lex [integration]
 
-FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base:2024_06_13_07_30_51 
+FROM ghcr.io/werto87/arch_linux_docker_image/archlinux_base:2025_06_06_09_30_44 
 
 COPY --from=BUILD /home/build_user/modern_durak_matchmaking_proxy/build/run_server /home/build_user/modern_durak_matchmaking_proxy/modern_durak_matchmaking_proxy
 
