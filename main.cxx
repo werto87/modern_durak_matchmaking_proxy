@@ -60,10 +60,10 @@ main (int argc, char **argv)
       signals.async_wait ([&] (auto, auto) { ioContext.stop (); });
       thread_pool pool{ 2 };
       auto server = Server{ ioContext, pool };
-      auto const PORT_USER =  boost::numeric_cast<u_int16_t>(std::stoul(args.value ("port-user")));
+      auto const PORT_USER =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-user")));
       auto const PORT_MATCHMAKING_TO_GAME =  args.value ("port-matchmaking-to-game");
       auto const PORT_USER_TO_GAME_VIA_MATCHMAKING =  args.value ("port-user-to-game-via-matchmaking");
-      auto const PORT_GAME_TO_MATCHMAKING =  boost::numeric_cast<u_int16_t>(std::stoul(args.value ("port-game-to-matchmaking")));
+      auto const PORT_GAME_TO_MATCHMAKING =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-game-to-matchmaking")));
       auto const PATH_TO_CHAIN_FILE =  args.value ("path-to-chain-file");
       auto const PATH_TO_PRIVATE_FILE =  args.value ("path-to-private-file");
       auto const PATH_TO_DH_File =  args.value ("path-to-dh-file");
