@@ -51,8 +51,9 @@ main (int argc, char **argv)
       std::terminate ();
       /* panic! the library couldn't be initialized, it is not safe to use */
     }
-  database::createDatabaseIfNotExist ();
-  database::createTables ();
+  auto databasePath=PATH_TO_BINARY + std::string{"/matchmaking.db"};
+  database::createDatabaseIfNotExist (databasePath);
+  database::createTables (databasePath);
   try
     {
       io_context ioContext{};
@@ -73,7 +74,7 @@ main (int argc, char **argv)
       using namespace boost::asio::experimental::awaitable_operators;
       auto userEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_USER };
       auto gameMatchmakingEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_GAME_TO_MATCHMAKING };
-      co_spawn (ioContext, server.userMatchmaking (userEndpoint, PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_File, std::chrono::seconds{SECRETS_POLLING_SLEEP_TIMER_SECONDS}, MatchmakingOption{}, ADDRESS_GAME,PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING,SSL_CONTEXT_VERIFY_NONE) && server.gameMatchmaking (gameMatchmakingEndpoint), my_web_socket::printException);
+      co_spawn (ioContext, server.userMatchmaking (userEndpoint, PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_File, databasePath, std::chrono::seconds{SECRETS_POLLING_SLEEP_TIMER_SECONDS}, MatchmakingOption{}, ADDRESS_GAME,PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING,SSL_CONTEXT_VERIFY_NONE) && server.gameMatchmaking (gameMatchmakingEndpoint,databasePath), my_web_socket::printException);
       ioContext.run ();
     }
   catch (std::exception &e)

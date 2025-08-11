@@ -20,6 +20,6 @@ operator<< (std::ostream &o, const Container<T> &container)
   return o;
 }
 
-std::shared_ptr<Matchmaking> createAccountAndJoinMatchmakingQueue (std::string const &playerName, boost::asio::io_context &ioContext, std::vector<std::string> &messages, std::list<GameLobby> &gameLobbies, std::list<std::shared_ptr<Matchmaking>> &matchmakings, boost::asio::thread_pool &pool, user_matchmaking::JoinMatchMakingQueue const &joinMatchMakingQueue);
+std::shared_ptr<Matchmaking> createAccountAndJoinMatchmakingQueue (std::string const &playerName, boost::asio::io_context &ioContext, std::vector<std::string> &messages, std::list<GameLobby> &gameLobbies, std::list<std::shared_ptr<Matchmaking>> &matchmakings, boost::asio::thread_pool &pool, user_matchmaking::JoinMatchMakingQueue const &joinMatchMakingQueue,std::filesystem::path const& fullPathIncludingDatabaseName);
 
 #endif /* F913C042_CAFF_4558_AE02_952AE3C4F17A */
