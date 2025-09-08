@@ -34,5 +34,6 @@ class Project(ConanFile):
         self.requires("modern_durak_game_option/latest")
         self.requires("modern_durak_game_shared/latest")
         self.requires("confu_algorithm/1.2.1")
+        self.requires("openssl/3.5.1",force=True)
         self.requires("magic_enum/0.9.6",force=True)
          
