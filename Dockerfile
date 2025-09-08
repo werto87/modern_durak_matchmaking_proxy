@@ -27,10 +27,10 @@ RUN cmake ..\
 WORKDIR /etc/letsencrypt/live/test-name/
 
 RUN sudo mkcert -install &&\
-    mkcert localhost && mv\
-    localhost.pem fullchain.pem &&\
-    mv localhost-key.pem privkey.pem &&\
-    openssl dhparam -out dhparam.pem 2048
+    sudo mkcert localhost && \
+    sudo mv localhost.pem fullchain.pem &&\
+    sudo mv localhost-key.pem privkey.pem &&\
+    sudo openssl dhparam -out dhparam.pem 2048
 
 WORKDIR /home/build_user/modern_durak_matchmaking_proxy/build
 

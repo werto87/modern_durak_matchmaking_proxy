@@ -55,6 +55,7 @@ auto const DEFAULT_PATH_TO_PRIVATE_FILE = PATH_TO_SOURCE + std::string{ "/test/c
 auto const DEFAULT_PATH_TO_DH_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/dhparam.pem" };
 auto const DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS = std::string{ "2" };
 auto const DEFAULT_ADDRESS_OF_GAME = std::string{ "127.0.0.1" };
+auto const DEFAULT_DATABASE_PATH = PATH_TO_BINARY + std::string{"/matchmaking.db"};
 
 int
 main (int argc, char **argv)
@@ -73,6 +74,7 @@ main (int argc, char **argv)
     .addOption("path-to-dh-file", DEFAULT_PATH_TO_DH_FILE).setHelp("path-to-dh-file", "path to dh file")
     .addOption("secrets-polling-sleep-time-seconds", DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS).setHelp("secrets-polling-sleep-time-seconds", "secrets polling sleep time seconds")
     .addOption("address-of-game", DEFAULT_ADDRESS_OF_GAME).setHelp("address-of-game", "address of game")
+    .addOption("path-to-database", DEFAULT_DATABASE_PATH).setHelp("path-to-database", "full path to database with database file name")
     .addBooleanOption("ssl-context-verify-none").setHelp("ssl-context-verify-none", "disable ssl verification for user to matchmaking usefull for debuging with google chrome")
     .setGlobalHelp("durak matchmaking")
     .parse(argc, argv);
@@ -82,7 +84,7 @@ main (int argc, char **argv)
       std::terminate ();
       /* panic! the library couldn't be initialized, it is not safe to use */
     }
-  auto databasePath=PATH_TO_BINARY + std::string{"/matchmaking.db"};
+  auto const databasePath=args.value ("path-to-database");
   database::createDatabaseIfNotExist (databasePath);
   database::createTables (databasePath);
   io_context ioContext{};
