@@ -1,19 +1,50 @@
 #include <vector>
 // TODO #include <vector> has to be included before #include <Corrade/Utility/Arguments.h> or #include <Corrade/Utility/Arguments.h> is not building. This problem is in libc++ version 19.1.7-1
 #include <Corrade/Utility/Arguments.h>
+#include <algorithm>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
 #include <boost/asio/experimental/awaitable_operators.hpp>
 #include <boost/asio/signal_set.hpp>
 #include <boost/asio/thread_pool.hpp>
+#include <boost/asio/use_awaitable.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/certify/extensions.hpp>
+#include <boost/certify/https_verification.hpp>
 #include <boost/json/src.hpp>
+#include <boost/json/src.hpp> // Only in one translation unit
+#include <cstddef>
+#include <deque>
+#include <exception>
+#include <filesystem>
+#include <fmt/color.h>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <login_matchmaking_game_shared/matchmakingGameSerialization.hxx>
+#include <login_matchmaking_game_shared/userMatchmakingSerialization.hxx>
 #include <matchmaking_proxy/database/database.hxx>
+#include <matchmaking_proxy/logic/matchmakingData.hxx>
 #include <matchmaking_proxy/logic/matchmakingGame.hxx>
 #include <matchmaking_proxy/server/matchmakingOption.hxx>
 #include <matchmaking_proxy/server/server.hxx>
 #include <matchmaking_proxy/util.hxx>
 #include <modern_durak_game_option/src.hxx>
 #include <modern_durak_game_option/userDefinedGameOption.hxx>
+#include <modern_durak_game_shared/modern_durak_game_shared.hxx>
 #include <my_web_socket/coSpawnPrintException.hxx>
+#include <my_web_socket/mockServer.hxx>
+#include <my_web_socket/myWebSocket.hxx>
+#include <openssl/ssl3.h>
 #include <sodium/core.h>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <utility>
+
+BOOST_FUSION_DEFINE_STRUCT ((account_with_combinationsSolved), Account, (std::string, accountName) (std::string, password) (size_t, rating) (size_t, combinationsSolved))
 
 auto const DEFAULT_PORT_USER = std::string{ "55555" };
 auto const DEFAULT_PORT_MATCHMAKING_TO_GAME = std::string{ "4242" };
@@ -23,7 +54,7 @@ auto const DEFAULT_PATH_TO_CHAIN_FILE = std::string{ "/etc/letsencrypt/live/test
 auto const DEFAULT_PATH_TO_PRIVATE_FILE = std::string{ "/etc/letsencrypt/live/test-name/privkey.pem" };
 auto const DEFAULT_PATH_TO_DH_File = std::string{ "/etc/letsencrypt/live/test-name/dhparams.pem" };
 auto const DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS = std::string{ "2" };
-auto const DEFAULT_ADDRESS_OF_GAME = std::string{ "localhost" };
+auto const DEFAULT_ADDRESS_OF_GAME = std::string{ "127.0.0.1" };
 
 int
 main (int argc, char **argv)
@@ -54,27 +85,82 @@ main (int argc, char **argv)
   auto databasePath=PATH_TO_BINARY + std::string{"/matchmaking.db"};
   database::createDatabaseIfNotExist (databasePath);
   database::createTables (databasePath);
-  try
+  io_context ioContext{};
+  signal_set signals (ioContext, SIGINT, SIGTERM);
+  signals.async_wait ([&] (auto, auto) { ioContext.stop (); });
+      try
     {
-      io_context ioContext{};
-      signal_set signals (ioContext, SIGINT, SIGTERM);
-      signals.async_wait ([&] (auto, auto) { ioContext.stop (); });
-      thread_pool pool{ 2 };
-      auto server = Server{ ioContext, pool };
-      auto const PORT_USER =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-user")));
-      auto const PORT_MATCHMAKING_TO_GAME =  args.value ("port-matchmaking-to-game");
-      auto const PORT_USER_TO_GAME_VIA_MATCHMAKING =  args.value ("port-user-to-game-via-matchmaking");
-      auto const PORT_GAME_TO_MATCHMAKING =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-game-to-matchmaking")));
-      auto const PATH_TO_CHAIN_FILE =  args.value ("path-to-chain-file");
-      auto const PATH_TO_PRIVATE_FILE =  args.value ("path-to-private-file");
-      auto const PATH_TO_DH_File =  args.value ("path-to-dh-file");
-      auto const SECRETS_POLLING_SLEEP_TIMER_SECONDS =  std::stoul(args.value ("secrets-polling-sleep-time-seconds"));
-      std::string ADDRESS_GAME = args.value ("address-of-game");
-      auto const SSL_CONTEXT_VERIFY_NONE= args.isSet("ssl-context-verify-none");
-      using namespace boost::asio::experimental::awaitable_operators;
-      auto userEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_USER };
-      auto gameMatchmakingEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_GAME_TO_MATCHMAKING };
-      co_spawn (ioContext, server.userMatchmaking (userEndpoint, PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_File, databasePath, std::chrono::seconds{SECRETS_POLLING_SLEEP_TIMER_SECONDS}, MatchmakingOption{}, ADDRESS_GAME,PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING,SSL_CONTEXT_VERIFY_NONE) && server.gameMatchmaking (gameMatchmakingEndpoint,databasePath), my_web_socket::printException);
+  thread_pool pool{ 2 };
+  auto const PORT_USER =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-user")));
+  auto const PORT_MATCHMAKING_TO_GAME =  args.value ("port-matchmaking-to-game");
+  auto const PORT_USER_TO_GAME_VIA_MATCHMAKING =  args.value ("port-user-to-game-via-matchmaking");
+  auto const PORT_GAME_TO_MATCHMAKING =  boost::numeric_cast<uint16_t>(std::stoul(args.value ("port-game-to-matchmaking")));
+  auto const PATH_TO_CHAIN_FILE =  args.value ("path-to-chain-file");
+  auto const PATH_TO_PRIVATE_FILE =  args.value ("path-to-private-file");
+  auto const PATH_TO_DH_FILE =  args.value ("path-to-dh-file");
+  auto const SECRETS_POLLING_SLEEP_TIMER_SECONDS =  std::stoul(args.value ("secrets-polling-sleep-time-seconds"));
+  std::string ADDRESS_GAME = args.value ("address-of-game");
+  auto const SSL_CONTEXT_VERIFY_NONE= args.isSet("ssl-context-verify-none");
+  using namespace boost::asio::experimental::awaitable_operators;
+  auto userMatchmakingEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_USER };
+  auto gameMatchmakingEndpoint = boost::asio::ip::tcp::endpoint{ ip::tcp::v4 (), PORT_GAME_TO_MATCHMAKING };
+  auto server = Server{ ioContext, pool, userMatchmakingEndpoint, gameMatchmakingEndpoint };
+  auto matchmakingOption = MatchmakingOption{};
+  matchmakingOption.handleCustomMessageFromUser = [] (std::string const &messageType, std::string const &message, MatchmakingData &matchmakingData) {
+  boost::system::error_code ec{};
+  auto messageAsObject = confu_json::read_json (message, ec);
+  if (ec) std::cout << "no handle for custom message: '" << message << "'" << std::endl;
+  else if (messageType == "GetCombinationSolved")
+    {
+      auto combinationSolved = confu_json::to_object<shared_class::GetCombinationSolved> (messageAsObject);
+      soci::session sql (soci::sqlite3, matchmakingData.fullPathIncludingDatabaseName.string ().c_str ());
+      bool columnExists = false;
+      soci::rowset<soci::row> rs = (sql.prepare << "PRAGMA table_info(Account)");
+      for (auto const &row : rs)
+        {
+          std::string name = row.get<std::string> (1);
+          if (name == "combinationsSolved")
+            {
+              columnExists = true;
+              break;
+            }
+        }
+      if (!columnExists) sql << "ALTER TABLE Account ADD COLUMN combinationsSolved INTEGER NOT NULL DEFAULT 0";
+      if (auto result = confu_soci::findStruct<account_with_combinationsSolved::Account> (sql, "accountName", combinationSolved.accountName))
+        {
+          matchmakingData.sendMsgToUser (objectToStringWithObjectName (shared_class::CombinationsSolved{ result->accountName, result->combinationsSolved }));
+        }
+    }
+};
+  co_spawn (ioContext,
+            server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_FILE, databasePath,std::chrono::seconds{ SECRETS_POLLING_SLEEP_TIMER_SECONDS}, matchmakingOption, "127.0.0.1", PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING)
+                || server.gameMatchmaking (databasePath,
+                                           [] (std::string const &messageType, std::string const &message, MatchmakingGameData &matchmakingGameData) {
+                                             boost::system::error_code ec{};
+                                             auto messageAsObject = confu_json::read_json (message, ec);
+                                             if (ec) std::cout << "no handle for custom message: '" << message << "'" << std::endl;
+                                             else if (messageType == "CombinationSolved")
+                                               {
+                                                 auto combinationSolved = confu_json::to_object<shared_class::CombinationSolved> (messageAsObject);
+                                                 soci::session sql (soci::sqlite3, matchmakingGameData.fullPathIncludingDatabaseName.string ().c_str ());
+                                                 bool columnExists = false;
+                                                 soci::rowset<soci::row> rs = (sql.prepare << "PRAGMA table_info(Account)");
+                                                 for (auto const &row : rs)
+                                                   {
+                                                     std::string name = row.get<std::string> (1);
+                                                     if (name == "combinationsSolved")
+                                                       {
+                                                         columnExists = true;
+                                                         break;
+                                                       }
+                                                   }
+                                                 if (!columnExists) sql << "ALTER TABLE Account ADD COLUMN combinationsSolved INTEGER NOT NULL DEFAULT 0";
+                                                 if (auto accountResult = confu_soci::findStruct<account_with_combinationsSolved::Account> (sql, "accountName", combinationSolved.accountName)) confu_soci::updateStruct (sql, account_with_combinationsSolved::Account{ accountResult.value ().accountName, accountResult.value ().password, accountResult.value ().rating, accountResult.value ().combinationsSolved + 1 });
+                                               }
+                                             else
+                                               std::cout << "no handle for custom message: '" << message << "'" << std::endl;
+                                           }),
+            my_web_socket::printException);
       ioContext.run ();
     }
   catch (std::exception &e)
