@@ -110,8 +110,8 @@ TEST_CASE ("INTEGRATION TEST user,matchmaking, game", "[.integration]")
   auto userGameViaMatchmaking = my_web_socket::MockServer{ {  boost::asio::ip::make_address("127.0.0.1"), userGameViaMatchmakingPort }, { .requestResponse = {}, .requestStartsWithResponse = { { R"foo(ConnectToGame)foo", "ConnectToGameSuccess|{}" } } }, "userGameViaMatchmaking", fmt::fg (fmt::color::lawn_green), "0" };
   // clang-format on
   auto const PATH_TO_CHAIN_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/localhost.pem" };
-  auto const PATH_TO_PRIVATE_File = PATH_TO_SOURCE + std::string{ "/test/cert/localhost-key.pem" };
-  auto const PATH_TO_DH_File = PATH_TO_SOURCE + std::string{ "/test/cert/dhparam.pem" };
+  auto const PATH_TO_PRIVATE_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/localhost-key.pem" };
+  auto const PATH_TO_DH_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/dhparam.pem" };
   auto const POLLING_SLEEP_TIMER = std::chrono::seconds{ 2 };
   using namespace boost::asio::experimental::awaitable_operators;
   auto matchmakingOption = MatchmakingOption{};
@@ -142,7 +142,7 @@ TEST_CASE ("INTEGRATION TEST user,matchmaking, game", "[.integration]")
       }
   };
   co_spawn (ioContext,
-            server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_File, PATH_TO_DH_File, databasePath, POLLING_SLEEP_TIMER, matchmakingOption, "127.0.0.1", std::to_string (matchmakingGamePort), std::to_string (userGameViaMatchmakingPort))
+            server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_FILE, databasePath, POLLING_SLEEP_TIMER, matchmakingOption, "127.0.0.1", std::to_string (matchmakingGamePort), std::to_string (userGameViaMatchmakingPort))
                 || server.gameMatchmaking (databasePath,
                                            [] (std::string const &messageType, std::string const &message, MatchmakingGameData &matchmakingGameData) {
                                              boost::system::error_code ec{};

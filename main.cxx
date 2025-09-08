@@ -50,9 +50,9 @@ auto const DEFAULT_PORT_USER = std::string{ "55555" };
 auto const DEFAULT_PORT_MATCHMAKING_TO_GAME = std::string{ "4242" };
 auto const DEFAULT_PORT_USER_TO_GAME_VIA_MATCHMAKING = std::string{ "3232" };
 auto const DEFAULT_PORT_GAME_TO_MATCHMAKING = std::string{ "12312" };
-auto const DEFAULT_PATH_TO_CHAIN_FILE = std::string{ "/etc/letsencrypt/live/test-name/fullchain.pem" };
-auto const DEFAULT_PATH_TO_PRIVATE_FILE = std::string{ "/etc/letsencrypt/live/test-name/privkey.pem" };
-auto const DEFAULT_PATH_TO_DH_File = std::string{ "/etc/letsencrypt/live/test-name/dhparams.pem" };
+auto const DEFAULT_PATH_TO_CHAIN_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/localhost.pem" };
+auto const DEFAULT_PATH_TO_PRIVATE_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/localhost-key.pem" };
+auto const DEFAULT_PATH_TO_DH_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/dhparam.pem" };
 auto const DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS = std::string{ "2" };
 auto const DEFAULT_ADDRESS_OF_GAME = std::string{ "127.0.0.1" };
 
@@ -70,7 +70,7 @@ main (int argc, char **argv)
     .addOption("port-game-to-matchmaking", DEFAULT_PORT_GAME_TO_MATCHMAKING).setHelp("port-game-to-matchmaking", "port game to matchmaking")
     .addOption("path-to-chain-file", DEFAULT_PATH_TO_CHAIN_FILE).setHelp("path-to-chain-file", "path to chain file")
     .addOption("path-to-private-file", DEFAULT_PATH_TO_PRIVATE_FILE).setHelp("path-to-private-file", "path to private file")
-    .addOption("path-to-dh-file", DEFAULT_PATH_TO_DH_File).setHelp("path-to-dh-file", "path to dh file")
+    .addOption("path-to-dh-file", DEFAULT_PATH_TO_DH_FILE).setHelp("path-to-dh-file", "path to dh file")
     .addOption("secrets-polling-sleep-time-seconds", DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS).setHelp("secrets-polling-sleep-time-seconds", "secrets polling sleep time seconds")
     .addOption("address-of-game", DEFAULT_ADDRESS_OF_GAME).setHelp("address-of-game", "address of game")
     .addBooleanOption("ssl-context-verify-none").setHelp("ssl-context-verify-none", "disable ssl verification for user to matchmaking usefull for debuging with google chrome")
