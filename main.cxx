@@ -135,7 +135,7 @@ main (int argc, char **argv)
     }
 };
   co_spawn (ioContext,
-            server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_FILE, databasePath,std::chrono::seconds{ SECRETS_POLLING_SLEEP_TIMER_SECONDS}, matchmakingOption, "127.0.0.1", PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING)
+            server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_FILE, databasePath,std::chrono::seconds{ SECRETS_POLLING_SLEEP_TIMER_SECONDS}, matchmakingOption,ADDRESS_GAME, PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING)
                 || server.gameMatchmaking (databasePath,
                                            [] (std::string const &messageType, std::string const &message, MatchmakingGameData &matchmakingGameData) {
                                              boost::system::error_code ec{};
