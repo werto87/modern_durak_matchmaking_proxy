@@ -31,6 +31,7 @@ class Project(ConanFile):
         self.requires("catch2/[<3]")
         self.requires("corrade/2025.06")
         self.requires("matchmaking_proxy/4.3.2")
+        self.requires("confu_json/1.2.1",force=True)
         self.requires("modern_durak_game_option/latest")
         self.requires("modern_durak_game_shared/latest")
         self.requires("confu_algorithm/1.2.1")
