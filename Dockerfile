@@ -12,7 +12,7 @@ WORKDIR /home/build_user/modern_durak_matchmaking_proxy
 RUN sudo chown -R build_user /home/build_user &&\
     conan remote add modern_durak http://modern-durak.com:8081/artifactory/api/conan/conan &&\
     conan profile detect &&\
-    conan install . --output-folder=build --settings compiler.cppstd=gnu23 --build=missing
+    conan install . --output-folder=build --settings compiler.cppstd=gnu23 --build=missing --options "boost/*:without_cobalt=True" 
 
 WORKDIR /home/build_user/modern_durak_matchmaking_proxy/build
 
