@@ -34,7 +34,7 @@
 #include <modern_durak_game_option/src.hxx>
 #include <modern_durak_game_option/userDefinedGameOption.hxx>
 #include <modern_durak_game_shared/modern_durak_game_shared.hxx>
-#include <my_web_socket/coSpawnPrintException.hxx>
+#include <my_web_socket/coSpawnTraced.hxx>
 #include <my_web_socket/mockServer.hxx>
 #include <my_web_socket/myWebSocket.hxx>
 #include <openssl/ssl3.h>
@@ -55,7 +55,7 @@ auto const DEFAULT_PATH_TO_PRIVATE_FILE = PATH_TO_SOURCE + std::string{ "/test/c
 auto const DEFAULT_PATH_TO_DH_FILE = PATH_TO_SOURCE + std::string{ "/test/cert/dhparam.pem" };
 auto const DEFAULT_SECRETS_POLLING_SLEEP_TIMER_SECONDS = std::string{ "2" };
 auto const DEFAULT_ADDRESS_OF_GAME = std::string{ "127.0.0.1" };
-auto const DEFAULT_DATABASE_PATH = PATH_TO_BINARY + std::string{"/matchmaking.db"};
+auto const DEFAULT_DATABASE_PATH = PATH_TO_BINARY + std::string{ "/matchmaking.db" };
 
 int
 main (int argc, char **argv)
@@ -134,7 +134,7 @@ main (int argc, char **argv)
         }
     }
 };
-  co_spawn (ioContext,
+  my_web_socket::coSpawnTraced (ioContext,
             server.userMatchmaking (PATH_TO_CHAIN_FILE, PATH_TO_PRIVATE_FILE, PATH_TO_DH_FILE, databasePath,std::chrono::seconds{ SECRETS_POLLING_SLEEP_TIMER_SECONDS}, matchmakingOption,ADDRESS_GAME, PORT_MATCHMAKING_TO_GAME, PORT_USER_TO_GAME_VIA_MATCHMAKING)
                 || server.gameMatchmaking (databasePath,
                                            [] (std::string const &messageType, std::string const &message, MatchmakingGameData &matchmakingGameData) {
@@ -162,7 +162,7 @@ main (int argc, char **argv)
                                              else
                                                std::cout << "no handle for custom message: '" << message << "'" << std::endl;
                                            }),
-            my_web_socket::printException);
+           "");
       ioContext.run ();
     }
   catch (std::exception &e)

@@ -6,17 +6,16 @@
 #include <login_matchmaking_game_shared/userMatchmakingSerialization.hxx>
 using namespace matchmaking_proxy;
 std::shared_ptr<Matchmaking>
-createAccountAndJoinMatchmakingQueue (const std::string &playerName, boost::asio::io_context &ioContext, std::vector<std::string> &messages, std::list<GameLobby> &gameLobbies, std::list<std::shared_ptr<Matchmaking> > &matchmakings, boost::asio::thread_pool &pool, const user_matchmaking::JoinMatchMakingQueue &joinMatchMakingQueue,std::filesystem::path const& fullPathIncludingDatabaseName)
+createAccountAndJoinMatchmakingQueue (const std::string &playerName, boost::asio::io_context &ioContext, std::vector<std::string> &messages, std::shared_ptr<std::list<GameLobby> > &gameLobbies, std::list<std::weak_ptr<Matchmaking> > &matchmakings, boost::asio::thread_pool &pool, const user_matchmaking::JoinMatchMakingQueue &joinMatchMakingQueue, std::filesystem::path const &fullPathIncludingDatabaseName)
 {
-  auto &matchmaking = matchmakings.emplace_back (std::make_shared<Matchmaking> (MatchmakingData{ ioContext, matchmakings, [] (auto) {}, gameLobbies, pool, MatchmakingOption{}, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 44444 }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 33333 },fullPathIncludingDatabaseName }));
-  matchmaking = std::make_shared<Matchmaking> (MatchmakingData{ ioContext, matchmakings, [&messages] (std::string msg) { messages.push_back (msg); }, gameLobbies, pool, MatchmakingOption{ .timeToAcceptInvite = std::chrono::milliseconds{ 2222 } }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 44444 }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 33333 },fullPathIncludingDatabaseName });
+  auto &matchmakingWeak = matchmakings.emplace_back (std::make_shared<Matchmaking> (MatchmakingData{ ioContext, matchmakings, [] (auto) {}, gameLobbies, pool, MatchmakingOption{}, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 44444 }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 33333 }, fullPathIncludingDatabaseName }));
+  matchmakingWeak = std::make_shared<Matchmaking> (MatchmakingData{ ioContext, matchmakings, [&messages] (std::string msg) { messages.push_back (msg); }, gameLobbies, pool, MatchmakingOption{ .timeToAcceptInvite = std::chrono::milliseconds{ 2222 } }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 44444 }, boost::asio::ip::tcp::endpoint{ boost::asio::ip::tcp::v4 (), 33333 }, fullPathIncludingDatabaseName });
   ioContext.stop ();
-  ioContext.reset ();
   ioContext.restart ();
+  auto matchmaking = matchmakingWeak.lock ();
   REQUIRE (matchmaking->processEvent (objectToStringWithObjectName (user_matchmaking::CreateAccount{ playerName, "abc" })));
   ioContext.run_for (std::chrono::milliseconds{ 100 });
   ioContext.stop ();
-  ioContext.reset ();
   ioContext.restart ();
   REQUIRE (matchmaking->processEvent (objectToStringWithObjectName (joinMatchMakingQueue)));
   ioContext.run_for (std::chrono::milliseconds{ 10 });

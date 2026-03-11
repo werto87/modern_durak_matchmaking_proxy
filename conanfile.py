@@ -27,13 +27,12 @@ class Project(ConanFile):
 
 
     def requirements(self):
-        self.requires("boost/1.86.0",force=True)
+        self.requires("boost/1.90.0",force=True)
         self.requires("catch2/[<3]")
         self.requires("corrade/2025.06")
-        self.requires("matchmaking_proxy/3.0.0")
+        self.requires("matchmaking_proxy/4.3.0")
         self.requires("modern_durak_game_option/latest")
         self.requires("modern_durak_game_shared/latest")
         self.requires("confu_algorithm/1.2.1")
-        self.requires("openssl/3.5.1",force=True)
         self.requires("magic_enum/0.9.6",force=True)
          
